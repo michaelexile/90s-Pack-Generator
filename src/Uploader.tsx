@@ -73,6 +73,8 @@ export function FileHandler({ setFileData, setIsProcessing, resetStates }: FileH
           Upload Files
         </button>
 
+        <p className="italic text-gray-600">only supports .PNG's</p>
+
         <input
           type="file"
           id="files"
