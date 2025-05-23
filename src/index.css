@@ -1,4 +1,9 @@
+
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
 
 @layer base {
   :root {
@@ -50,10 +55,3 @@ body::before {
   }
 }
 
-@media (prefers-reduced-motion) {
-  *,
-  ::before,
-  ::after {
-    animation: none !important;
-  }
-}
