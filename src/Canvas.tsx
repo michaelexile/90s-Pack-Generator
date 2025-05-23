@@ -2,8 +2,6 @@ import { IconDisplay } from "./IconDisplay";
 import { Canvas, FabricImage } from "fabric"; // browser
 import { useEffect, useRef, useState } from "react";
 import perkBackground from "./assets/img/perkbg.png"; //why did I need to create images.d.ts for this?
-import itemsBackground from "./assets/img/itemsbg.png";
-import addonsBackground from "./assets/img/addonsbg.png";
 import iconGradient from "./assets/img/gradient.png"; //why did I need to create images.d.ts for this?
 import ImageStroke from "image-stroke";
 import rotate from "image-stroke/lib/method-rotate";
@@ -11,10 +9,10 @@ import rotate from "image-stroke/lib/method-rotate";
 interface CanvasProps {
   files?: { name: string; data: string }[];
   setCanvasURLs: React.Dispatch<React.SetStateAction<{ name: string; data: string; id: number }[]>>;
-  backgroundType?: 'perk' | 'items' | 'addons';
+  
 }
 
-export function MainCanvas({ files, setCanvasURLs, backgroundType = 'perk' }: CanvasProps) {
+export function MainCanvas({ files, setCanvasURLs }: CanvasProps) {
 
  
   const canvasEl = useRef<HTMLCanvasElement>(null);
@@ -31,7 +29,7 @@ export function MainCanvas({ files, setCanvasURLs, backgroundType = 'perk' }: Ca
     if (canvasEl.current) {
       //wait until canvas element exists to run
       const newCanvas = new Canvas(canvasEl.current);
-      setBackground(newCanvas, backgroundType);
+      setBackground(newCanvas);
       setCanvas(newCanvas); //store newCanvas into setCanvas for persistence
     }
   }, []); //no trigger = only runs once
@@ -40,19 +38,19 @@ export function MainCanvas({ files, setCanvasURLs, backgroundType = 'perk' }: Ca
     if (files && canvas) {
       // Clear the canvas before adding new icons after a potential reset
       canvas.clear();
-      setBackground(canvas, backgroundType);
+      setBackground(canvas); // Re-apply background
       files.forEach((file) => {
         console.log("Adding icon:", file.name);
         addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL);
       });
     }
-  }, [files, canvas, backgroundType]);
+  }, [files, canvas]);
 
   useEffect(() => {
     if (canvas) {
-      setBackground(canvas, backgroundType); // Ensure background is set on initial canvas creation
+      setBackground(canvas); // Ensure background is set on initial canvas creation
     }
-  }, [canvas, backgroundType]);
+  }, [canvas]);
   function downloadCanvas() {
     if (downloadEl.current && downloadURL) {
       downloadEl.current.href = downloadURL;
@@ -198,23 +196,17 @@ function addIcon(
 }
 
 
-function setBackground(canvas: Canvas, type: 'perk' | 'items' | 'addons' = 'perk') {
+function setBackground(canvas: Canvas) {
+  //potential icon background selection?
   const bgImage = new Image();
-
-  if (type === 'perk') {
-    bgImage.src = perkBackground;
-  } else if (type === 'items') {
-    bgImage.src = itemsBackground;
-  } else if (type === 'addons') {
-    bgImage.src = addonsBackground;
-  }
+  bgImage.src = perkBackground;
 
   bgImage.onload = () => {
     console.log("background loaded successfully");
     const fabricImage = new FabricImage(bgImage, {
       left: 0,
       top: 0,
-      selectable: false,
+      selectable: false, // Set to true if you want to allow selecting the image
     });
     canvas.backgroundImage = fabricImage;
     canvas.renderAll();
