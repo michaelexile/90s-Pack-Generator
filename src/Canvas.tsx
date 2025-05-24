@@ -1,7 +1,10 @@
 import { IconDisplay } from "./IconDisplay";
 import { Canvas, FabricImage } from "fabric"; // browser
 import { useEffect, useRef, useState } from "react";
-import perkBackground from "./assets/img/perkbg.png"; //why did I need to create images.d.ts for this?
+import perkBackground from "./assets/img/icon-bg/perkbg.png"; //why did I need to create images.d.ts for this?
+import itemBackground from "./assets/img/icon-bg/itembg.png";
+//import addonBackground from "./assets/img/icon-bg/addonbg.png";
+//import offeringBackground from "./assets/img/icon-bg/offeringbg.png";
 import iconGradient from "./assets/img/gradient.png"; //why did I need to create images.d.ts for this?
 import ImageStroke from "image-stroke";
 import rotate from "image-stroke/lib/method-rotate";
@@ -9,10 +12,11 @@ import rotate from "image-stroke/lib/method-rotate";
 interface CanvasProps {
   files?: { name: string; data: string }[];
   setCanvasURLs: React.Dispatch<React.SetStateAction<{ name: string; data: string; id: number }[]>>;
+  backgroundType?: "perk" | "item" | "addon" | "offering";
   
 }
 
-export function MainCanvas({ files, setCanvasURLs }: CanvasProps) {
+export function MainCanvas({ files, setCanvasURLs, backgroundType }: CanvasProps) {
 
  
   const canvasEl = useRef<HTMLCanvasElement>(null);
@@ -198,9 +202,20 @@ function addIcon(
 
 function setBackground(canvas: Canvas) {
   //potential icon background selection?
+
+
   const bgImage = new Image();
   bgImage.src = perkBackground;
 
+    
+  const backgroundImages = {
+    perk: perkBackground,
+    item: itemBackground,
+    //addon: addonsBackground,
+    //offering: offeringsBackground
+  };
+
+  
   bgImage.onload = () => {
     console.log("background loaded successfully");
     const fabricImage = new FabricImage(bgImage, {
