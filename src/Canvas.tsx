@@ -2,6 +2,7 @@ import { IconDisplay } from "./IconDisplay";
 import { Canvas, FabricImage } from "fabric"; // browser
 import { useEffect, useRef, useState } from "react";
 import perkBackground from "./assets/img/perkbg.png"; //why did I need to create images.d.ts for this?
+import itemBackground from "./assets/img/itembg.png";
 import iconGradient from "./assets/img/gradient.png"; //why did I need to create images.d.ts for this?
 import ImageStroke from "image-stroke";
 import rotate from "image-stroke/lib/method-rotate";
@@ -27,18 +28,23 @@ export function MainCanvas({ files, setCanvasURLs, bgType}: CanvasProps) {
 
   useEffect(() => {
     if (canvasEl.current) {
-      //wait until canvas element exists to run
       const newCanvas = new Canvas(canvasEl.current);
-      setBackground(newCanvas);
-      setCanvas(newCanvas); //store newCanvas into setCanvas for persistence
+      setCanvas(newCanvas);
     }
-  }, []); //no trigger = only runs once
+  }, []); // Only create canvas once
+
+  useEffect(() => {
+    if (canvas) {
+      setBackground(canvas, bgType || "perkbg");
+      setCanvasURLs([]); // Reset URLs when background changes
+    }
+  }, [canvas, bgType, setCanvasURLs]); // Handle background changes
 
   useEffect(() => {
     if (files && canvas) {
       // Clear the canvas before adding new icons after a potential reset
       canvas.clear();
-      setBackground(canvas); // Re-apply background
+      setBackground(canvas, bgType || "perkbg");
       files.forEach((file) => {
         console.log("Adding icon:", file.name);
         addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL);
@@ -48,9 +54,11 @@ export function MainCanvas({ files, setCanvasURLs, bgType}: CanvasProps) {
 
   useEffect(() => {
     if (canvas) {
-      setBackground(canvas); // Ensure background is set on initial canvas creation
+      setBackground(canvas, bgType || "perkbg");
     }
   }, [canvas]);
+
+  
   function downloadCanvas() {
     if (downloadEl.current && downloadURL) {
       downloadEl.current.href = downloadURL;
@@ -196,15 +204,17 @@ function addIcon(
 }
 
 
-function setBackground(canvas: Canvas) {
+function setBackground(canvas: Canvas, bgSelection: string) {
   //potential icon background selection?
   const bgImage = new Image();
-  bgImage.src = perkBackground;
-
   const backgroundType = {
     perkbg: perkBackground,
+    itembg: itemBackground
 
   };
+  bgImage.src = backgroundType[bgSelection];
+
+
   bgImage.onload = () => {
     console.log("background loaded successfully");
     const fabricImage = new FabricImage(bgImage, {
