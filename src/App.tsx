@@ -54,7 +54,7 @@ export function App() {
       <div className="flex justify-center items-center">
 
       <FileHandler setFileData={setFileData} setIsProcessing={setIsProcessing} resetStates={resetStates}/> {/*FileHandler Fixed*/}
-      <MainCanvas files={isProcessing ? [] : fileData} setCanvasURLs={setCanvasURLs} />  {/*MainCanvas Fixed*/}
+      <MainCanvas files={isProcessing ? [] : fileData} setCanvasURLs={setCanvasURLs} bgType="perk" />  {/*MainCanvas Fixed*/}
       
 
       </div>

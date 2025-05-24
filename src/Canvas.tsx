@@ -9,10 +9,10 @@ import rotate from "image-stroke/lib/method-rotate";
 interface CanvasProps {
   files?: { name: string; data: string }[];
   setCanvasURLs: React.Dispatch<React.SetStateAction<{ name: string; data: string; id: number }[]>>;
-  
+  bgType?: string;
 }
 
-export function MainCanvas({ files, setCanvasURLs }: CanvasProps) {
+export function MainCanvas({ files, setCanvasURLs, bgType}: CanvasProps) {
 
  
   const canvasEl = useRef<HTMLCanvasElement>(null);
@@ -201,6 +201,10 @@ function setBackground(canvas: Canvas) {
   const bgImage = new Image();
   bgImage.src = perkBackground;
 
+  const backgroundType = {
+    perkbg: perkBackground,
+
+  };
   bgImage.onload = () => {
     console.log("background loaded successfully");
     const fabricImage = new FabricImage(bgImage, {
