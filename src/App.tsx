@@ -1,4 +1,5 @@
-import "./index.css";
+import "./styles/index.css";
+import "./styles/globals.css"
 import { FileHandler } from "./Uploader";
 import { IconDisplay } from "./IconDisplay";
 import { useState } from "react";
@@ -43,6 +44,8 @@ export function App() {
           className="p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#646cffaa] scale-120"
         />
 
+        
+
         {/*
         <img
           src={logo}
@@ -56,15 +59,10 @@ export function App() {
         /> */}
       </div>
 
-      <div className="flex justify-center items-center">
-        {/* FileHandler component for file uploads */}
-        <FileHandler
-          setFileData={handleFileUpload}
-          setIsProcessing={setIsProcessing}
-          resetStates={handleTabChange}
-        />
-        {/* Tabs component with state reset on change */}
-        <Tabs defaultValue="perk" className="w-[400px]" onValueChange={handleTabChange}>
+      <div className="flex justify-center">
+
+      
+      <Tabs defaultValue="perk" className="w-[400px] items-center" onValueChange={handleTabChange}>
           <TabsList>
             <TabsTrigger value="perk">Perks</TabsTrigger>
             <TabsTrigger value="item">Items</TabsTrigger>
@@ -79,6 +77,15 @@ export function App() {
             <ItemCanvas files={isProcessing ? [] : files} setCanvasURLs={setCanvasURLs} />
           </TabsContent>
         </Tabs>
+        </div>
+      <div className="flex justify-center items-center">
+        {/* FileHandler component for file uploads */}
+        <FileHandler
+          setFileData={handleFileUpload}
+          setIsProcessing={setIsProcessing}
+          resetStates={handleTabChange}
+        />
+        {/* Tabs component with state reset on change */}
       </div>
       {/* Display generated icons */}
       <div className="w-full">
