@@ -1,32 +1,26 @@
 import "./index.css";
-import { APITester } from "./APITester";
 import { FileHandler } from "./Uploader";
 import { IconDisplay } from "./IconDisplay";
-import { DownloadZip } from "./DownloadZip";
 import { useState } from "react";
-import { MainCanvas } from "./Canvas";
 import { PerkCanvas } from "./PerkCanvas";
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import bgImage from "./assets/img/3D-BG.gif";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 export function App() {
-  const [fileData, setFileData] = useState<{ name: string; data: string }[]>(
-    []
-  ); //must match the prop in Canvas
-  const [canvasURLs, setCanvasURLs] = useState<
-    { name: string; data: string; id: number }[]
-  >([]);
+  // State for managing uploaded files
+  const [files, setFiles] = useState<{ name: string; data: string }[]>([]);
+  // State for storing the generated canvas URLs with unique IDs
+  const [canvasURLs, setCanvasURLs] = useState<{ name: string; data: string; id: number }[]>([]);
+  // State to track if files are currently being processed
   const [isProcessing, setIsProcessing] = useState(false);
 
-  console.log("fileData from App.tsx" + fileData);
-
-  function resetStates() {
-    setFileData([]);
-    setCanvasURLs([]);
-    setIsProcessing(false);
-  }
+  // Function to reset all state when switching tabs
+  // This ensures a clean slate for each tab
+  const handleTabChange = () => {
+    setFiles([]); // Clear uploaded files
+    setCanvasURLs([]); // Clear generated canvas URLs
+    setIsProcessing(false); // Reset processing state
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-8 text-center relative z-10">
@@ -57,38 +51,32 @@ export function App() {
       </div>
 
       <div className="flex justify-center items-center">
+        {/* FileHandler component for file uploads */}
         <FileHandler
-          setFileData={setFileData}
+          setFileData={setFiles}
           setIsProcessing={setIsProcessing}
-          resetStates={resetStates}
-        />{" "}
-        {/*FileHandler Fixed*/}
-        {/*MainCanvas Fixed*/}
-        <Tabs 
-          defaultValue="perk" 
-          className="w-[400px]"
-        >
+          resetStates={handleTabChange} // Use handleTabChange as the reset function
+        />
+        {/* Tabs component with state reset on change */}
+        <Tabs defaultValue="perk" className="w-[400px]" onValueChange={handleTabChange}>
           <TabsList>
             <TabsTrigger value="perk">Perks</TabsTrigger>
             <TabsTrigger value="item">Items</TabsTrigger>
           </TabsList>
+          {/* Perk tab content */}
           <TabsContent value="perk">
-            <PerkCanvas
-              files={isProcessing ? [] : fileData}
-              setCanvasURLs={setCanvasURLs}
-            />
+            {/* Only pass files to PerkCanvas if not currently processing */}
+            <PerkCanvas files={isProcessing ? [] : files} setCanvasURLs={setCanvasURLs} />
           </TabsContent>
+          {/* Item tab content */}
           <TabsContent value="item">
-
+            <PerkCanvas files={isProcessing ? [] : files} setCanvasURLs={setCanvasURLs} />
           </TabsContent>
-
         </Tabs>
-        
       </div>
+      {/* Display generated icons */}
       <div className="w-full">
-        {" "}
-        
-        <IconDisplay files={canvasURLs}/> {/*IconDisplay Fixed*/}
+        <IconDisplay files={canvasURLs} />
       </div>
     </div>
   );
