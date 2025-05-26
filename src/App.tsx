@@ -3,6 +3,7 @@ import { FileHandler } from "./Uploader";
 import { IconDisplay } from "./IconDisplay";
 import { useState } from "react";
 import { PerkCanvas } from "./PerkCanvas";
+import { ItemCanvas } from "./ItemCanvas";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import bgImage from "./assets/img/3D-BG.gif";
 
@@ -20,6 +21,11 @@ export function App() {
     setFiles([]); // Clear uploaded files
     setCanvasURLs([]); // Clear generated canvas URLs
     setIsProcessing(false); // Reset processing state
+  };
+
+  // Function to handle file uploads
+  const handleFileUpload: React.Dispatch<React.SetStateAction<{ name: string; data: string }[]>> = (newFiles) => {
+    setFiles(newFiles);
   };
 
   return (
@@ -53,9 +59,9 @@ export function App() {
       <div className="flex justify-center items-center">
         {/* FileHandler component for file uploads */}
         <FileHandler
-          setFileData={setFiles}
+          setFileData={handleFileUpload}
           setIsProcessing={setIsProcessing}
-          resetStates={handleTabChange} // Use handleTabChange as the reset function
+          resetStates={handleTabChange}
         />
         {/* Tabs component with state reset on change */}
         <Tabs defaultValue="perk" className="w-[400px]" onValueChange={handleTabChange}>
@@ -70,7 +76,7 @@ export function App() {
           </TabsContent>
           {/* Item tab content */}
           <TabsContent value="item">
-            <PerkCanvas files={isProcessing ? [] : files} setCanvasURLs={setCanvasURLs} />
+            <ItemCanvas files={isProcessing ? [] : files} setCanvasURLs={setCanvasURLs} />
           </TabsContent>
         </Tabs>
       </div>

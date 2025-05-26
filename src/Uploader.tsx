@@ -16,8 +16,7 @@ export function FileHandler({ setFileData, setIsProcessing, resetStates }: FileH
   /*const [isProcessing, setIsProcessing] = useState(false);*/
 
   function uploadFiles(event: any) {
-    resetStates();
-    console.log("entering uploadFiles");
+    console.log("FileHandler: uploadFiles called");
     const fileList = event.target.files;
 
     if (!fileList || fileList.length === 0) {
@@ -25,49 +24,54 @@ export function FileHandler({ setFileData, setIsProcessing, resetStates }: FileH
       return;
     }
 
-    setIsProcessing(true); //preventing duplicate uploads due to trigger based on file updates on Canvas component
-    console.log("Files processing:", fileList.length);
+    setIsProcessing(true);
+    console.log("FileHandler: Files processing:", fileList.length);
     for (let i = 0; i < fileList.length; i++) {
-      console.log("Processing file:", fileList[i].name);
+      console.log("FileHandler: Processing file:", fileList[i].name);
       if (!fileList[i].type.startsWith("image/png")) {
         console.error("Only PNG files are allowed.");
-        continue; //skips to next image to see if it passes the criteria
+        continue;
       } else {
-        //we need a dataURL for the image for compatibility with ImageTracer
-        console.log("creating fileName");
+        console.log("FileHandler: creating fileName");
         const fileName = fileList[i].name.substring(
           0,
           fileList[i].name.lastIndexOf(".")
         );
         const icon = fileList[i];
         const reader = new FileReader();
-       
+
         reader.onload = (e) => {
-          console.log("entering reader.onload");
+          console.log("FileHandler: entering reader.onload for file:", fileName);
           const dataUrl = e.target?.result as string;
           setFileData((prevFiles) => {
+            console.log("FileHandler: Previous files count:", prevFiles.length);
             const updatedFiles = [...prevFiles, { name: fileName, data: dataUrl }];
+            console.log("FileHandler: Updated files count:", updatedFiles.length);
             if (updatedFiles.length === fileList.length) {
               setIsProcessing(false);
-              console.log("processing complete");
+              console.log("FileHandler: processing complete, total files:", updatedFiles.length);
             }
             return updatedFiles;
           });
-          
         };
 
         reader.readAsDataURL(icon);
       }
-      console.log("File processed + added to fileData.");
+      console.log("FileHandler: File processed + added to fileData.");
     }
-    
   }
 
   return (
     <>
       <div className="py-5 ">
         <button
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => {
+            console.log("FileHandler: Upload button clicked");
+            if (fileInputRef.current) {
+              fileInputRef.current.value = ''; // Reset the input value
+              fileInputRef.current.click();
+            }
+          }}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           Upload Files
@@ -83,7 +87,10 @@ export function FileHandler({ setFileData, setIsProcessing, resetStates }: FileH
           accept="image/png"
           ref={fileInputRef}
           className="hidden"
-          onChange={uploadFiles}
+          onChange={(e) => {
+            console.log("FileHandler: File input onChange triggered");
+            uploadFiles(e);
+          }}
         />
       </div>
 
