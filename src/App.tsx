@@ -5,6 +5,7 @@ import { IconDisplay } from "./IconDisplay";
 import { useState } from "react";
 import { PerkCanvas } from "./PerkCanvas";
 import { ItemCanvas } from "./ItemCanvas";
+import { AddonsCanvas } from "./AddonsCanvas";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import bgImage from "./assets/img/3D-BG.gif";
 
@@ -66,6 +67,8 @@ export function App() {
           <TabsList>
             <TabsTrigger value="perk">Perks</TabsTrigger>
             <TabsTrigger value="item">Items</TabsTrigger>
+            <TabsTrigger value="addon">Addons</TabsTrigger>
+
           </TabsList>
           {/* Perk tab content */}
           <TabsContent value="perk">
@@ -76,7 +79,11 @@ export function App() {
           <TabsContent value="item">
             <ItemCanvas files={isProcessing ? [] : files} setCanvasURLs={setCanvasURLs} />
           </TabsContent>
+          <TabsContent value="addon">
+            <AddonsCanvas files={isProcessing ? [] : files} setCanvasURLs={setCanvasURLs} />
+          </TabsContent>
         </Tabs>
+
         </div>
       <div className="flex justify-center items-center">
         {/* FileHandler component for file uploads */}
