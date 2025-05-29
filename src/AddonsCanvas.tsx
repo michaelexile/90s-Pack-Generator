@@ -52,7 +52,7 @@ export function AddonsCanvas({ files, setCanvasURLs}: CanvasProps) {
 
       files.forEach((file) => {
         console.log("ItemCanvas processing file:", file.name);
-        console.log("checking:" + addonJson);
+
 
         const matchingAddons = addonJson.filter(addon => addon.name.includes(file.name));
 
@@ -133,10 +133,9 @@ function addIcon(
     const fabricBgImage = new FabricImage(bgImage, {
       left: 0,
       top: 0,
-      selectable: false,
+      selectable: false, // Set to true if you want to allow selecting the image
     });
 
-    canvas.backgroundImage = fabricBgImage;
     
     // Create the clipped fabricImage
     const fabricImage = new FabricImage(gradImage, {
@@ -161,7 +160,11 @@ function addIcon(
 
     canvas.remove(fabricImage);
 
+    
     const htmlImage = new Image();
+    htmlImage.src = dataURL;
+    htmlImage.onload = processHtmlImage;
+
     
     // Process the HTML image once it's loaded
     function processHtmlImage() {
@@ -184,6 +187,7 @@ function addIcon(
       });
 
       canvas.add(fabricImage);
+      canvas.backgroundImage = fabricBgImage;
       canvas.renderAll();
 
       const canvasURL = canvas.toDataURL();
@@ -195,8 +199,7 @@ function addIcon(
       canvas.remove(fabricImage);
     }
 
-    htmlImage.onload = processHtmlImage;
-    htmlImage.src = dataURL;
+
 
     // Handle cached images
     if (htmlImage.complete) {
@@ -216,10 +219,29 @@ function addIcon(
     gradLoaded = true;
     processAfterLoad();
   };
+
+  let addonBG:any;
+
+  if (rarity) {
+    addonBG = rarity === "common" ? addonBrownBG
+                : rarity === "uncommon" ? addonBlueBG
+                : rarity === "rare" ? addonGreenBG
+                : rarity === "very_rare" ? addonPurpleBG
+                : rarity === "ultra_rare" ? addonPinkBG
+                : addonEventBG;
+  }
+
+  bgImage.onload = () => {
+    
+    console.log("background loaded successfully");
+    bgLoaded = true;
+    processAfterLoad();
+  };
   
   // Set sources
   iconImage.src = icon;
   gradImage.src = iconGradient;
+  bgImage.src = addonBG;
   
   // Check if images are already complete (cached)
   if (iconImage.complete) {
@@ -231,25 +253,16 @@ function addIcon(
     console.log("gradImage already loaded for:", name);
     gradLoaded = true;
   }
+
+  if (bgImage.complete) {
+    console.log("gradImage already loaded for:", name);
+    bgLoaded = true;
+  }
+  
   
   // Run the processing immediately if both images are already loaded
   processAfterLoad();
 
-  if (rarity) {
-    const addonBG = rarity === "common" ? addonBrownBG
-                : rarity === "uncommon" ? addonBlueBG
-                : rarity === "rare" ? addonGreenBG
-                : rarity === "very_rare" ? addonPurpleBG
-                : rarity === "ultra_rare" ? addonPinkBG
-                : addonEventBG;
-    
-    bgImage.src = addonBG;
-    bgImage.onload = () => {
-      console.log("background loaded for:", name);
-      bgLoaded = true;
-      processAfterLoad();
-    };
-  }
 }
 
 function setBackground(canvas: Canvas, backgroundType?: String) {
@@ -263,14 +276,5 @@ function setBackground(canvas: Canvas, backgroundType?: String) {
 
   bgImage.src = addonBG;
 
-  bgImage.onload = () => {
-    console.log("background loaded successfully");
-    const fabricImage = new FabricImage(bgImage, {
-      left: 0,
-      top: 0,
-      selectable: false, // Set to true if you want to allow selecting the image
-    });
-    canvas.backgroundImage = fabricImage;
-    canvas.renderAll();
-  };
+
 }
