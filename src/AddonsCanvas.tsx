@@ -48,10 +48,8 @@ export function AddonsCanvas({ files, setCanvasURLs}: CanvasProps) {
     if (files && canvas) {
       console.log("ItemCanvas received files:", files.length);
       // Clear the canvas before adding new icons after a potential reset
-
-
       canvas.clear();
-      setBackground(canvas);
+
       files.forEach((file) => {
         console.log("ItemCanvas processing file:", file.name);
         console.log("checking:" + addonJson);
@@ -61,11 +59,10 @@ export function AddonsCanvas({ files, setCanvasURLs}: CanvasProps) {
         if (matchingAddons.length > 0) {
           console.log("Found matching addons:", matchingAddons);
           const rarity = matchingAddons[0].details.rarity;
-          setBackground(canvas, rarity);
-
+          addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL, rarity);
+        } else {
+          console.log(file.name, "could not be matched. No Icon generated");
         }
-
-        addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL);
       });
     }
   }, [files, canvas]);
@@ -111,24 +108,35 @@ function addIcon(
   name: string,
   canvas: Canvas,
   setDownloadURL: (url: string) => void,
-  handleAddNewURL: (name: string, data: string) => void
+  handleAddNewURL: (name: string, data: string) => void,
+  rarity?: string
 ) {
   const iconImage = new Image();
   const gradImage = new Image();
+  const bgImage = new Image();
   
   // Keep track of loaded images and processing status
   let iconLoaded = false;
   let gradLoaded = false;
+  let bgLoaded = false;
   let isProcessing = false; // prevent duplicate processing
   
   //runs when both images are loaded
   function processAfterLoad() {
-    // Only process once, and only if both images are loaded
-    if (isProcessing || !iconLoaded || !gradLoaded) return;
+    // Only process once, and only if all images are loaded
+    if (isProcessing || !iconLoaded || !gradLoaded || !bgLoaded) return;
     
     // Set processing flag to prevent duplicates
     isProcessing = true;
     console.log("Processing images for:", name);
+    
+    const fabricBgImage = new FabricImage(bgImage, {
+      left: 0,
+      top: 0,
+      selectable: false,
+    });
+
+    canvas.backgroundImage = fabricBgImage;
     
     // Create the clipped fabricImage
     const fabricImage = new FabricImage(gradImage, {
@@ -226,6 +234,22 @@ function addIcon(
   
   // Run the processing immediately if both images are already loaded
   processAfterLoad();
+
+  if (rarity) {
+    const addonBG = rarity === "common" ? addonBrownBG
+                : rarity === "uncommon" ? addonBlueBG
+                : rarity === "rare" ? addonGreenBG
+                : rarity === "very_rare" ? addonPurpleBG
+                : rarity === "ultra_rare" ? addonPinkBG
+                : addonEventBG;
+    
+    bgImage.src = addonBG;
+    bgImage.onload = () => {
+      console.log("background loaded for:", name);
+      bgLoaded = true;
+      processAfterLoad();
+    };
+  }
 }
 
 function setBackground(canvas: Canvas, backgroundType?: String) {
