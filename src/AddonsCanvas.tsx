@@ -8,6 +8,13 @@ import addonGreenBG from "./assets/img/addonGreen.png";
 import addonPurpleBG from "./assets/img/addonPurple.png";
 import addonPinkBG from "./assets/img/addonPink.png";
 import addonEventBG from "./assets/img/addonEvent.png";
+import addonBrownGrad from "./assets/img/addonBrownGrad.png"; //why did I need to create images.d.ts for this?
+import addonBlueGrad from "./assets/img/addonBlueGrad.png";
+import addonYellowGrad from "./assets/img/addonYellowGrad.png";
+import addonGreenGrad from "./assets/img/addonGreenGrad.png";
+import addonPurpleGrad from "./assets/img/addonPurpleGrad.png";
+import addonPinkGrad from "./assets/img/addonPinkGrad.png";
+import addonEventGrad from "./assets/img/addonEventGrad.png";
 import iconGradient from "./assets/img/gradient.png"; //why did I need to create images.d.ts for this?
 import ImageStroke from "image-stroke";
 import rotate from "image-stroke/lib/method-rotate";
@@ -221,6 +228,7 @@ function addIcon(
   };
 
   let addonBG:any;
+  let addonGrad:any;
 
   if (rarity) {
     addonBG = rarity === "common" ? addonBrownBG
@@ -229,6 +237,13 @@ function addIcon(
                 : rarity === "very_rare" ? addonPurpleBG
                 : rarity === "ultra_rare" ? addonPinkBG
                 : addonEventBG;
+
+                addonGrad = rarity === "common" ? addonBrownGrad
+                : rarity === "uncommon" ? addonBlueGrad
+                : rarity === "rare" ? addonGreenGrad
+                : rarity === "very_rare" ? addonPurpleGrad
+                : rarity === "ultra_rare" ? addonPinkGrad
+                : addonEventGrad;
   }
 
   bgImage.onload = () => {
@@ -240,7 +255,7 @@ function addIcon(
   
   // Set sources
   iconImage.src = icon;
-  gradImage.src = iconGradient;
+  gradImage.src = addonGrad;
   bgImage.src = addonBG;
   
   // Check if images are already complete (cached)
