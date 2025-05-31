@@ -1,7 +1,22 @@
 import { Canvas, FabricImage } from "fabric"; // browser
 import { useEffect, useRef, useState } from "react";
-import perkBackground from "./assets/img/perkbg.png"; //why did I need to create images.d.ts for this?
-import iconGradient from "./assets/img/gradient.png"; //why did I need to create images.d.ts for this?
+
+//import addonJson from "../../data/dbdItemAddons.json";
+
+import addonBrownBG from "../../assets/img/backgrounds/addonBrown.png"; //why did I need to create images.d.ts for this?
+import addonBlueBG from "../../assets/img/backgrounds/addonBlue.png";
+import addonYellowBG from "../../assets/img/backgrounds/addonYellow.png";
+import addonGreenBG from "../../assets/img/backgrounds/addonGreen.png";
+import addonPurpleBG from "../../assets/img/backgrounds/addonPurple.png";
+import addonPinkBG from "../../assets/img/backgrounds/addonPink.png";
+import addonEventBG from "../../assets/img/backgrounds/addonEvent.png";
+import addonBrownGrad from "../../assets/img/gradients/addonBrownGrad.png"; //why did I need to create images.d.ts for this?
+import addonBlueGrad from "../../assets/img/gradients/addonBlueGrad.png";
+import addonYellowGrad from "../../assets/img/gradients/addonYellowGrad.png";
+import addonGreenGrad from "../../assets/img/gradients/addonGreenGrad.png";
+import addonPurpleGrad from "../../assets/img/gradients/addonPurpleGrad.png";
+import addonPinkGrad from "../../assets/img/gradients/addonPinkGrad.png";
+import addonEventGrad from "../../assets/img/gradients/addonEventGrad.png";
 import ImageStroke from "image-stroke";
 import rotate from "image-stroke/lib/method-rotate";
 
@@ -10,13 +25,23 @@ interface CanvasProps {
   setCanvasURLs: React.Dispatch<React.SetStateAction<{ name: string; data: string; id: number }[]>>;
 }
 
-export function PerkCanvas({ files, setCanvasURLs}: CanvasProps) {
+interface AddonData {
+  name: string;
+  details: {
+    folder: string;
+    rarity: string;
+  }
+}
+
+export function AddonsCanvas({ files, setCanvasURLs}: CanvasProps) {
 
  
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const downloadEl = useRef<HTMLAnchorElement>(null);
   const [canvas, setCanvas] = useState<Canvas | null>(null); //needed so that the canvas persists after re-renders. Initially, image uploads were causing re-renders then there would be no canvas to add to
   const [downloadURL, setDownloadURL] = useState("");
+  const [addonJson, setAddonJson] = useState<AddonData[]>([]);
+  
   /*const [canvasURLs, setCanvasURLs] = useState<
     { name: string; data: string; id: number }[]
   >([]);
@@ -38,13 +63,23 @@ export function PerkCanvas({ files, setCanvasURLs}: CanvasProps) {
 
   useEffect(() => {
     if (files && canvas) {
-      console.log("PerkCanvas received files:", files.length);
+      console.log("ItemCanvas received files:", files.length);
       // Clear the canvas before adding new icons after a potential reset
       canvas.clear();
-      setBackground(canvas);
+
       files.forEach((file) => {
-        console.log("PerkCanvas processing file:", file.name);
-        addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL);
+        console.log("ItemCanvas processing file:", file.name);
+
+
+        const matchingAddons = addonJson.filter(addon => addon.name.includes(file.name));
+
+        if (matchingAddons.length > 0) {
+          console.log("Found matching addons:", matchingAddons);
+          const rarity = matchingAddons[0].details.rarity;
+          addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL, rarity);
+        } else {
+          console.log(file.name, "could not be matched. No Icon generated");
+        }
       });
     }
   }, [files, canvas]);
@@ -54,6 +89,13 @@ export function PerkCanvas({ files, setCanvasURLs}: CanvasProps) {
       setBackground(canvas);
     }
   }, [canvas]);
+
+  useEffect(() => {
+    fetch('https://michaelexile.github.io/DBD-IconsJSON/dbdItemAddons.json')
+      .then(res => res.json())
+      .then(data => setAddonJson(data))
+      .catch(err => console.error('Error loading addon data:', err));
+  }, []);
 
   
   function downloadCanvas() {
@@ -90,24 +132,34 @@ function addIcon(
   name: string,
   canvas: Canvas,
   setDownloadURL: (url: string) => void,
-  handleAddNewURL: (name: string, data: string) => void
+  handleAddNewURL: (name: string, data: string) => void,
+  rarity?: string
 ) {
   const iconImage = new Image();
   const gradImage = new Image();
+  const bgImage = new Image();
   
   // Keep track of loaded images and processing status
   let iconLoaded = false;
   let gradLoaded = false;
+  let bgLoaded = false;
   let isProcessing = false; // prevent duplicate processing
   
   //runs when both images are loaded
   function processAfterLoad() {
-    // Only process once, and only if both images are loaded
-    if (isProcessing || !iconLoaded || !gradLoaded) return;
+    // Only process once, and only if all images are loaded
+    if (isProcessing || !iconLoaded || !gradLoaded || !bgLoaded) return;
     
     // Set processing flag to prevent duplicates
     isProcessing = true;
     console.log("Processing images for:", name);
+    
+    const fabricBgImage = new FabricImage(bgImage, {
+      left: 0,
+      top: 0,
+      selectable: false, // Set to true if you want to allow selecting the image
+    });
+
     
     // Create the clipped fabricImage
     const fabricImage = new FabricImage(gradImage, {
@@ -132,7 +184,11 @@ function addIcon(
 
     canvas.remove(fabricImage);
 
+    
     const htmlImage = new Image();
+    htmlImage.src = dataURL;
+    htmlImage.onload = processHtmlImage;
+
     
     // Process the HTML image once it's loaded
     function processHtmlImage() {
@@ -155,6 +211,7 @@ function addIcon(
       });
 
       canvas.add(fabricImage);
+      canvas.backgroundImage = fabricBgImage;
       canvas.renderAll();
 
       const canvasURL = canvas.toDataURL();
@@ -166,8 +223,7 @@ function addIcon(
       canvas.remove(fabricImage);
     }
 
-    htmlImage.onload = processHtmlImage;
-    htmlImage.src = dataURL;
+
 
     // Handle cached images
     if (htmlImage.complete) {
@@ -187,10 +243,37 @@ function addIcon(
     gradLoaded = true;
     processAfterLoad();
   };
+
+  let addonBG:any;
+  let addonGrad:any;
+
+  if (rarity) {
+    addonBG = rarity === "common" ? addonBrownBG
+                : rarity === "uncommon" ? addonBlueBG
+                : rarity === "rare" ? addonGreenBG
+                : rarity === "very_rare" ? addonPurpleBG
+                : rarity === "ultra_rare" ? addonPinkBG
+                : addonEventBG;
+
+                addonGrad = rarity === "common" ? addonBrownGrad
+                : rarity === "uncommon" ? addonBlueGrad
+                : rarity === "rare" ? addonGreenGrad
+                : rarity === "very_rare" ? addonPurpleGrad
+                : rarity === "ultra_rare" ? addonPinkGrad
+                : addonEventGrad;
+  }
+
+  bgImage.onload = () => {
+    
+    console.log("background loaded successfully");
+    bgLoaded = true;
+    processAfterLoad();
+  };
   
   // Set sources
   iconImage.src = icon;
-  gradImage.src = iconGradient;
+  gradImage.src = addonGrad;
+  bgImage.src = addonBG;
   
   // Check if images are already complete (cached)
   if (iconImage.complete) {
@@ -202,26 +285,28 @@ function addIcon(
     console.log("gradImage already loaded for:", name);
     gradLoaded = true;
   }
+
+  if (bgImage.complete) {
+    console.log("gradImage already loaded for:", name);
+    bgLoaded = true;
+  }
+  
   
   // Run the processing immediately if both images are already loaded
   processAfterLoad();
+
 }
 
-function setBackground(canvas: Canvas) {
+function setBackground(canvas: Canvas, backgroundType?: String) {
   //potential icon background selection?
   const bgImage = new Image();
 
-  bgImage.src = perkBackground;
+  const addonBG = backgroundType === "common" ? addonBrownBG
+              : backgroundType === "uncommon" ? addonBlueBG
+              : backgroundType === "rare" ? addonGreenBG
+              : addonPurpleBG;
 
-  bgImage.onload = () => {
-    console.log("background loaded successfully");
-    const fabricImage = new FabricImage(bgImage, {
-      left: 0,
-      top: 0,
-      selectable: false, // Set to true if you want to allow selecting the image
-    });
-    canvas.backgroundImage = fabricImage;
-    canvas.renderAll();
-  };
+  bgImage.src = addonBG;
+
+
 }
-

@@ -1,7 +1,7 @@
 import { Canvas, FabricImage } from "fabric"; // browser
 import { useEffect, useRef, useState } from "react";
-import itemBackground from "./assets/img/itembg.png"; //why did I need to create images.d.ts for this?
-import iconGradient from "./assets/img/gradient.png"; //why did I need to create images.d.ts for this?
+import perkBackground from "../../assets/img/backgrounds/perkbg.png"; //why did I need to create images.d.ts for this?
+import iconGradient from "../../assets/img/gradients/gradient.png"; //why did I need to create images.d.ts for this?
 import ImageStroke from "image-stroke";
 import rotate from "image-stroke/lib/method-rotate";
 
@@ -10,7 +10,7 @@ interface CanvasProps {
   setCanvasURLs: React.Dispatch<React.SetStateAction<{ name: string; data: string; id: number }[]>>;
 }
 
-export function ItemCanvas({ files, setCanvasURLs}: CanvasProps) {
+export function PerkCanvas({ files, setCanvasURLs}: CanvasProps) {
 
  
   const canvasEl = useRef<HTMLCanvasElement>(null);
@@ -38,12 +38,12 @@ export function ItemCanvas({ files, setCanvasURLs}: CanvasProps) {
 
   useEffect(() => {
     if (files && canvas) {
-      console.log("ItemCanvas received files:", files.length);
+      console.log("PerkCanvas received files:", files.length);
       // Clear the canvas before adding new icons after a potential reset
       canvas.clear();
       setBackground(canvas);
       files.forEach((file) => {
-        console.log("ItemCanvas processing file:", file.name);
+        console.log("PerkCanvas processing file:", file.name);
         addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL);
       });
     }
@@ -211,7 +211,7 @@ function setBackground(canvas: Canvas) {
   //potential icon background selection?
   const bgImage = new Image();
 
-  bgImage.src = itemBackground;
+  bgImage.src = perkBackground;
 
   bgImage.onload = () => {
     console.log("background loaded successfully");
@@ -224,3 +224,4 @@ function setBackground(canvas: Canvas) {
     canvas.renderAll();
   };
 }
+

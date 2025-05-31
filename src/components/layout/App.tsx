@@ -1,13 +1,13 @@
-import "./styles/index.css";
-import "./styles/globals.css"
-import { FileHandler } from "./Uploader";
-import { IconDisplay } from "./IconDisplay";
+import "../../styles/index.css";
+import "../../styles/globals.css";
+import { FileHandler } from "../common/Uploader";
+import { IconDisplay } from "../common/IconDisplay";
 import { useState } from "react";
-import { PerkCanvas } from "./PerkCanvas";
-import { ItemCanvas } from "./ItemCanvas";
-import { AddonsCanvas } from "./AddonsCanvas";
+import { PerkCanvas } from "../canvas/PerkCanvas";
+import { ItemCanvas } from "../canvas/ItemCanvas";
+import { AddonsCanvas } from "../canvas/AddonsCanvas";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import bgImage from "./assets/img/3D-BG.gif";
+import bgImage from "../../assets/img/3D-BG.gif";
 
 export function App() {
   // State for managing uploaded files

@@ -1,21 +1,7 @@
 import { Canvas, FabricImage } from "fabric"; // browser
 import { useEffect, useRef, useState } from "react";
-import addonJson from "./data/dbdItemAddons.json";
-import addonBrownBG from "./assets/img/addonBrown.png"; //why did I need to create images.d.ts for this?
-import addonBlueBG from "./assets/img/addonBlue.png";
-import addonYellowBG from "./assets/img/addonYellow.png";
-import addonGreenBG from "./assets/img/addonGreen.png";
-import addonPurpleBG from "./assets/img/addonPurple.png";
-import addonPinkBG from "./assets/img/addonPink.png";
-import addonEventBG from "./assets/img/addonEvent.png";
-import addonBrownGrad from "./assets/img/addonBrownGrad.png"; //why did I need to create images.d.ts for this?
-import addonBlueGrad from "./assets/img/addonBlueGrad.png";
-import addonYellowGrad from "./assets/img/addonYellowGrad.png";
-import addonGreenGrad from "./assets/img/addonGreenGrad.png";
-import addonPurpleGrad from "./assets/img/addonPurpleGrad.png";
-import addonPinkGrad from "./assets/img/addonPinkGrad.png";
-import addonEventGrad from "./assets/img/addonEventGrad.png";
-import iconGradient from "./assets/img/gradient.png"; //why did I need to create images.d.ts for this?
+import itemBackground from "../../assets/img/backgrounds/itembg.png"; //why did I need to create images.d.ts for this?
+import iconGradient from "../../assets/img/gradients/gradient.png"; //why did I need to create images.d.ts for this?
 import ImageStroke from "image-stroke";
 import rotate from "image-stroke/lib/method-rotate";
 
@@ -24,14 +10,13 @@ interface CanvasProps {
   setCanvasURLs: React.Dispatch<React.SetStateAction<{ name: string; data: string; id: number }[]>>;
 }
 
-export function AddonsCanvas({ files, setCanvasURLs}: CanvasProps) {
+export function ItemCanvas({ files, setCanvasURLs}: CanvasProps) {
 
  
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const downloadEl = useRef<HTMLAnchorElement>(null);
   const [canvas, setCanvas] = useState<Canvas | null>(null); //needed so that the canvas persists after re-renders. Initially, image uploads were causing re-renders then there would be no canvas to add to
   const [downloadURL, setDownloadURL] = useState("");
-  
   /*const [canvasURLs, setCanvasURLs] = useState<
     { name: string; data: string; id: number }[]
   >([]);
@@ -56,20 +41,10 @@ export function AddonsCanvas({ files, setCanvasURLs}: CanvasProps) {
       console.log("ItemCanvas received files:", files.length);
       // Clear the canvas before adding new icons after a potential reset
       canvas.clear();
-
+      setBackground(canvas);
       files.forEach((file) => {
         console.log("ItemCanvas processing file:", file.name);
-
-
-        const matchingAddons = addonJson.filter(addon => addon.name.includes(file.name));
-
-        if (matchingAddons.length > 0) {
-          console.log("Found matching addons:", matchingAddons);
-          const rarity = matchingAddons[0].details.rarity;
-          addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL, rarity);
-        } else {
-          console.log(file.name, "could not be matched. No Icon generated");
-        }
+        addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL);
       });
     }
   }, [files, canvas]);
@@ -115,34 +90,24 @@ function addIcon(
   name: string,
   canvas: Canvas,
   setDownloadURL: (url: string) => void,
-  handleAddNewURL: (name: string, data: string) => void,
-  rarity?: string
+  handleAddNewURL: (name: string, data: string) => void
 ) {
   const iconImage = new Image();
   const gradImage = new Image();
-  const bgImage = new Image();
   
   // Keep track of loaded images and processing status
   let iconLoaded = false;
   let gradLoaded = false;
-  let bgLoaded = false;
   let isProcessing = false; // prevent duplicate processing
   
   //runs when both images are loaded
   function processAfterLoad() {
-    // Only process once, and only if all images are loaded
-    if (isProcessing || !iconLoaded || !gradLoaded || !bgLoaded) return;
+    // Only process once, and only if both images are loaded
+    if (isProcessing || !iconLoaded || !gradLoaded) return;
     
     // Set processing flag to prevent duplicates
     isProcessing = true;
     console.log("Processing images for:", name);
-    
-    const fabricBgImage = new FabricImage(bgImage, {
-      left: 0,
-      top: 0,
-      selectable: false, // Set to true if you want to allow selecting the image
-    });
-
     
     // Create the clipped fabricImage
     const fabricImage = new FabricImage(gradImage, {
@@ -167,11 +132,7 @@ function addIcon(
 
     canvas.remove(fabricImage);
 
-    
     const htmlImage = new Image();
-    htmlImage.src = dataURL;
-    htmlImage.onload = processHtmlImage;
-
     
     // Process the HTML image once it's loaded
     function processHtmlImage() {
@@ -194,7 +155,6 @@ function addIcon(
       });
 
       canvas.add(fabricImage);
-      canvas.backgroundImage = fabricBgImage;
       canvas.renderAll();
 
       const canvasURL = canvas.toDataURL();
@@ -206,7 +166,8 @@ function addIcon(
       canvas.remove(fabricImage);
     }
 
-
+    htmlImage.onload = processHtmlImage;
+    htmlImage.src = dataURL;
 
     // Handle cached images
     if (htmlImage.complete) {
@@ -226,37 +187,10 @@ function addIcon(
     gradLoaded = true;
     processAfterLoad();
   };
-
-  let addonBG:any;
-  let addonGrad:any;
-
-  if (rarity) {
-    addonBG = rarity === "common" ? addonBrownBG
-                : rarity === "uncommon" ? addonBlueBG
-                : rarity === "rare" ? addonGreenBG
-                : rarity === "very_rare" ? addonPurpleBG
-                : rarity === "ultra_rare" ? addonPinkBG
-                : addonEventBG;
-
-                addonGrad = rarity === "common" ? addonBrownGrad
-                : rarity === "uncommon" ? addonBlueGrad
-                : rarity === "rare" ? addonGreenGrad
-                : rarity === "very_rare" ? addonPurpleGrad
-                : rarity === "ultra_rare" ? addonPinkGrad
-                : addonEventGrad;
-  }
-
-  bgImage.onload = () => {
-    
-    console.log("background loaded successfully");
-    bgLoaded = true;
-    processAfterLoad();
-  };
   
   // Set sources
   iconImage.src = icon;
-  gradImage.src = addonGrad;
-  bgImage.src = addonBG;
+  gradImage.src = iconGradient;
   
   // Check if images are already complete (cached)
   if (iconImage.complete) {
@@ -268,28 +202,25 @@ function addIcon(
     console.log("gradImage already loaded for:", name);
     gradLoaded = true;
   }
-
-  if (bgImage.complete) {
-    console.log("gradImage already loaded for:", name);
-    bgLoaded = true;
-  }
-  
   
   // Run the processing immediately if both images are already loaded
   processAfterLoad();
-
 }
 
-function setBackground(canvas: Canvas, backgroundType?: String) {
+function setBackground(canvas: Canvas) {
   //potential icon background selection?
   const bgImage = new Image();
 
-  const addonBG = backgroundType === "common" ? addonBrownBG
-              : backgroundType === "uncommon" ? addonBlueBG
-              : backgroundType === "rare" ? addonGreenBG
-              : addonPurpleBG;
+  bgImage.src = itemBackground;
 
-  bgImage.src = addonBG;
-
-
+  bgImage.onload = () => {
+    console.log("background loaded successfully");
+    const fabricImage = new FabricImage(bgImage, {
+      left: 0,
+      top: 0,
+      selectable: false, // Set to true if you want to allow selecting the image
+    });
+    canvas.backgroundImage = fabricImage;
+    canvas.renderAll();
+  };
 }
