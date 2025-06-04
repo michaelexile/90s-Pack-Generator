@@ -6,6 +6,7 @@ import { useState } from "react";
 import { PerkCanvas } from "../canvas/PerkCanvas";
 import { ItemCanvas } from "../canvas/ItemCanvas";
 import { AddonsCanvas } from "../canvas/AddonsCanvas";
+import { OfferingCanvas } from "../canvas/OfferingCanvas";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import bgImage from "../../assets/img/3D-BG.gif";
 
@@ -68,6 +69,7 @@ export function App() {
             <TabsTrigger value="perk">Perks</TabsTrigger>
             <TabsTrigger value="item">Items</TabsTrigger>
             <TabsTrigger value="addon">Addons</TabsTrigger>
+            <TabsTrigger value="offering">Offerings</TabsTrigger>
 
           </TabsList>
           {/* Perk tab content */}
@@ -81,6 +83,11 @@ export function App() {
           </TabsContent>
           <TabsContent value="addon">
             <AddonsCanvas files={isProcessing ? [] : files} setCanvasURLs={setCanvasURLs} />
+          </TabsContent>
+
+          <TabsContent value="offering">
+            {/* Only pass files to PerkCanvas if not currently processing */}
+            <OfferingCanvas files={isProcessing ? [] : files} setCanvasURLs={setCanvasURLs} />
           </TabsContent>
         </Tabs>
 
