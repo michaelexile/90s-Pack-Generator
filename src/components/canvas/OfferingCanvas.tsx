@@ -3,20 +3,14 @@ import { useEffect, useRef, useState } from "react";
 
 //import addonJson from "../../data/dbdItemAddons.json";
 
-import addonBrownBG from "../../assets/img/backgrounds/addonBrown.png"; //why did I need to create images.d.ts for this?
-import addonBlueBG from "../../assets/img/backgrounds/addonBlue.png";
-import addonYellowBG from "../../assets/img/backgrounds/addonYellow.png";
-import addonGreenBG from "../../assets/img/backgrounds/addonGreen.png";
-import addonPurpleBG from "../../assets/img/backgrounds/addonPurple.png";
-import addonPinkBG from "../../assets/img/backgrounds/addonPink.png";
-import addonEventBG from "../../assets/img/backgrounds/addonEvent.png";
-import addonBrownGrad from "../../assets/img/gradients/addonBrownGrad.png"; //why did I need to create images.d.ts for this?
-import addonBlueGrad from "../../assets/img/gradients/addonBlueGrad.png";
-import addonYellowGrad from "../../assets/img/gradients/addonYellowGrad.png";
-import addonGreenGrad from "../../assets/img/gradients/addonGreenGrad.png";
-import addonPurpleGrad from "../../assets/img/gradients/addonPurpleGrad.png";
-import addonPinkGrad from "../../assets/img/gradients/addonPinkGrad.png";
-import addonEventGrad from "../../assets/img/gradients/addonEventGrad.png";
+import offeringBG from "../../assets/img/backgrounds/offeringbg.png"; //why did I need to create images.d.ts for this?
+import offeringBrownGrad from "../../assets/img/gradients/offeringBrownGrad.png"; //why did I need to create images.d.ts for this?
+import offeringBlueGrad from "../../assets/img/gradients/offeringBlueGrad.png";
+import offeringYellowGrad from "../../assets/img/gradients/offeringYellowGrad.png";
+import offeringGreenGrad from "../../assets/img/gradients/offeringGreenGrad.png";
+import offeringPurpleGrad from "../../assets/img/gradients/offeringPurpleGrad.png";
+import offeringPinkGrad from "../../assets/img/gradients/offeringPinkGrad.png";
+import offeringEventGrad from "../../assets/img/gradients/offeringEventGrad.png";
 import ImageStroke from "image-stroke";
 import rotate from "image-stroke/lib/method-rotate";
 
@@ -91,7 +85,7 @@ export function OfferingCanvas({ files, setCanvasURLs}: CanvasProps) {
   }, [canvas]);
 
   useEffect(() => {
-    fetch('https://michaelexile.github.io/DBD-IconsJSON/dbdItemAddons.json')
+    fetch('https://michaelexile.github.io/DBD-IconsJSON/dbdOfferings.json')
       .then(res => res.json())
       .then(data => setAddonJson(data))
       .catch(err => console.error('Error loading addon data:', err));
@@ -248,19 +242,19 @@ function addIcon(
   let addonGrad:any;
 
   if (rarity) {
-    addonBG = rarity === "common" ? addonBrownBG
-                : rarity === "uncommon" ? addonBlueBG
-                : rarity === "rare" ? addonGreenBG
-                : rarity === "very_rare" ? addonPurpleBG
-                : rarity === "ultra_rare" ? addonPinkBG
-                : addonEventBG;
+    addonBG = rarity === "common" ? offeringBG
+                : rarity === "uncommon" ? offeringBG
+                : rarity === "rare" ? offeringBG
+                : rarity === "very_rare" ? offeringBG
+                : rarity === "ultra_rare" ? offeringBG
+                : offeringBG;
 
-                addonGrad = rarity === "common" ? addonBrownGrad
-                : rarity === "uncommon" ? addonBlueGrad
-                : rarity === "rare" ? addonGreenGrad
-                : rarity === "very_rare" ? addonPurpleGrad
-                : rarity === "ultra_rare" ? addonPinkGrad
-                : addonEventGrad;
+                addonGrad = rarity === "common" ? offeringBrownGrad
+                : rarity === "uncommon" ? offeringGreenGrad //uncommon is green
+                : rarity === "rare" ? offeringBlueGrad //rare is blue
+                : rarity === "very_rare" ? offeringPurpleGrad //very rare is purple
+                : rarity === "ultra_rare" ? offeringPinkGrad //ultra rare is pink
+                : offeringEventGrad;
   }
 
   bgImage.onload = () => {
@@ -301,10 +295,10 @@ function setBackground(canvas: Canvas, backgroundType?: String) {
   //potential icon background selection?
   const bgImage = new Image();
 
-  const addonBG = backgroundType === "common" ? addonBrownBG
-              : backgroundType === "uncommon" ? addonBlueBG
-              : backgroundType === "rare" ? addonGreenBG
-              : addonPurpleBG;
+  const addonBG = backgroundType === "common" ? offeringBG
+              : backgroundType === "uncommon" ? offeringBG
+              : backgroundType === "rare" ? offeringBG
+              : offeringBG;
 
   bgImage.src = addonBG;
 

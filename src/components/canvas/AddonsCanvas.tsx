@@ -249,17 +249,17 @@ function addIcon(
 
   if (rarity) {
     addonBG = rarity === "common" ? addonBrownBG
-                : rarity === "uncommon" ? addonBlueBG
-                : rarity === "rare" ? addonGreenBG
-                : rarity === "very_rare" ? addonPurpleBG
-                : rarity === "ultra_rare" ? addonPinkBG
+                : rarity === "uncommon" ? addonGreenBG //uncommon is green
+                : rarity === "rare" ? addonBlueBG //rare is blue
+                : rarity === "very_rare" ? addonPurpleBG //very rare is purple
+                : rarity === "ultra_rare" ? addonPinkBG //ultra rare is pink
                 : addonEventBG;
 
                 addonGrad = rarity === "common" ? addonBrownGrad
-                : rarity === "uncommon" ? addonBlueGrad
-                : rarity === "rare" ? addonGreenGrad
-                : rarity === "very_rare" ? addonPurpleGrad
-                : rarity === "ultra_rare" ? addonPinkGrad
+                : rarity === "uncommon" ? addonGreenGrad //uncommon is green
+                : rarity === "rare" ? addonBlueGrad //rare is blue
+                : rarity === "very_rare" ? addonPurpleGrad //very rare is purple
+                : rarity === "ultra_rare" ? addonPinkGrad //ultra rare is pink
                 : addonEventGrad;
   }
 
