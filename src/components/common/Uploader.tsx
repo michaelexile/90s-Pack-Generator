@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { MainCanvas } from "./Canvas";
 
 interface FileHandlerProps {
   setFileData: React.Dispatch<React.SetStateAction<{ name: string; data: string }[]>>;
