@@ -38,15 +38,10 @@ export function BaseCanvas({ files, setCanvasURLs, jsonEndpoint, getBackgroundIm
     if (files && canvas) {
       canvas.clear();
       files.forEach((file) => {
-        if (isPerk) {
-          // For perks, we don't need to check rarity
-          addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL);
-        } else {
-          const matchingItems = itemData.filter(item => item.name.includes(file.name));
-          if (matchingItems.length > 0) {
-            const rarity = matchingItems[0].details.rarity;
-            addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL, rarity);
-          }
+        const matchingItems = itemData.filter(item => item.name.includes(file.name));
+        if (matchingItems.length > 0) {
+          const rarity = matchingItems[0].details.rarity;
+          addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL, rarity);
         }
       });
     }
@@ -54,12 +49,10 @@ export function BaseCanvas({ files, setCanvasURLs, jsonEndpoint, getBackgroundIm
 
 
   useEffect(() => {
-    if (!isPerk) {
-      fetch(jsonEndpoint)
-        .then(res => res.json())
-        .then(data => setItemData(data))
-        .catch(err => console.error('Error loading data:', err));
-    }
+    fetch(jsonEndpoint)
+      .then(res => res.json())
+      .then(data => setItemData(data))
+      .catch(err => console.error('Error loading data:', err));
   }, []);
 
   function downloadCanvas() {
