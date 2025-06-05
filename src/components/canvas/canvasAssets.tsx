@@ -41,7 +41,9 @@ import offeringPinkGrad from "../../assets/img/gradients/offeringPinkGrad.png";
 import offeringEventGrad from "../../assets/img/gradients/offeringEventGrad.png";
 
 
+
 export const canvasAssets = {
+
   addon: {
     backgrounds: {
       common: addonBrownBG,

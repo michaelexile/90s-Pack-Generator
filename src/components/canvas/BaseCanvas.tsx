@@ -8,6 +8,7 @@ interface CanvasProps {
   setCanvasURLs: React.Dispatch<React.SetStateAction<{ name: string; data: string; id: number }[]>>;
   jsonEndpoint: string;
   getBackgroundImage: (rarity: string) => { bg: string; grad: string };
+  isPerk?: boolean;
 }
 
 interface ItemData {
@@ -18,7 +19,7 @@ interface ItemData {
   }
 }
 
-export function BaseCanvas({ files, setCanvasURLs, jsonEndpoint, getBackgroundImage }: CanvasProps) {
+export function BaseCanvas({ files, setCanvasURLs, jsonEndpoint, getBackgroundImage, isPerk = false }: CanvasProps) {
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const downloadEl = useRef<HTMLAnchorElement>(null);
   const [canvas, setCanvas] = useState<Canvas | null>(null);
@@ -37,10 +38,15 @@ export function BaseCanvas({ files, setCanvasURLs, jsonEndpoint, getBackgroundIm
     if (files && canvas) {
       canvas.clear();
       files.forEach((file) => {
-        const matchingItems = itemData.filter(item => item.name.includes(file.name));
-        if (matchingItems.length > 0) {
-          const rarity = matchingItems[0].details.rarity;
-          addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL, rarity);
+        if (isPerk) {
+          // For perks, we don't need to check rarity
+          addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL);
+        } else {
+          const matchingItems = itemData.filter(item => item.name.includes(file.name));
+          if (matchingItems.length > 0) {
+            const rarity = matchingItems[0].details.rarity;
+            addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL, rarity);
+          }
         }
       });
     }
@@ -48,10 +54,12 @@ export function BaseCanvas({ files, setCanvasURLs, jsonEndpoint, getBackgroundIm
 
 
   useEffect(() => {
-    fetch(jsonEndpoint)
-      .then(res => res.json())
-      .then(data => setItemData(data))
-      .catch(err => console.error('Error loading data:', err));
+    if (!isPerk) {
+      fetch(jsonEndpoint)
+        .then(res => res.json())
+        .then(data => setItemData(data))
+        .catch(err => console.error('Error loading data:', err));
+    }
   }, []);
 
   function downloadCanvas() {

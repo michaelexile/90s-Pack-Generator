@@ -1,14 +1,7 @@
 import { Canvas, FabricImage } from "fabric"; // browser
 import { useEffect, useRef, useState } from "react";
-import addonJson from "./data/dbdItemAddons.json";
-import addonBrownBG from "./assets/img/addonBrown.png"; //why did I need to create images.d.ts for this?
-import addonBlueBG from "./assets/img/addonBlue.png";
-import addonYellowBG from "./assets/img/addonYellow.png";
-import addonGreenBG from "./assets/img/addonGreen.png";
-import addonPurpleBG from "./assets/img/addonPurple.png";
-import addonPinkBG from "./assets/img/addonPink.png";
-import addonEventBG from "./assets/img/addonEvent.png";
-import iconGradient from "./assets/img/gradient.png"; //why did I need to create images.d.ts for this?
+import perkBackground from "../../assets/img/backgrounds/perkbg.png"; //why did I need to create images.d.ts for this?
+import iconGradient from "../../assets/img/gradients/gradient.png"; //why did I need to create images.d.ts for this?
 import ImageStroke from "image-stroke";
 import rotate from "image-stroke/lib/method-rotate";
 
@@ -17,14 +10,13 @@ interface CanvasProps {
   setCanvasURLs: React.Dispatch<React.SetStateAction<{ name: string; data: string; id: number }[]>>;
 }
 
-export function AddonsCanvas({ files, setCanvasURLs}: CanvasProps) {
+export function PerkCanvas({ files, setCanvasURLs}: CanvasProps) {
 
  
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const downloadEl = useRef<HTMLAnchorElement>(null);
   const [canvas, setCanvas] = useState<Canvas | null>(null); //needed so that the canvas persists after re-renders. Initially, image uploads were causing re-renders then there would be no canvas to add to
   const [downloadURL, setDownloadURL] = useState("");
-  
   /*const [canvasURLs, setCanvasURLs] = useState<
     { name: string; data: string; id: number }[]
   >([]);
@@ -46,25 +38,12 @@ export function AddonsCanvas({ files, setCanvasURLs}: CanvasProps) {
 
   useEffect(() => {
     if (files && canvas) {
-      console.log("ItemCanvas received files:", files.length);
+      console.log("PerkCanvas received files:", files.length);
       // Clear the canvas before adding new icons after a potential reset
-
-
       canvas.clear();
       setBackground(canvas);
       files.forEach((file) => {
-        console.log("ItemCanvas processing file:", file.name);
-        console.log("checking:" + addonJson);
-
-        const matchingAddons = addonJson.filter(addon => addon.name.includes(file.name));
-
-        if (matchingAddons.length > 0) {
-          console.log("Found matching addons:", matchingAddons);
-          const rarity = matchingAddons[0].details.rarity;
-          setBackground(canvas, rarity);
-
-        }
-
+        console.log("PerkCanvas processing file:", file.name);
         addIcon(file.data, file.name, canvas, setDownloadURL, handleAddNewURL);
       });
     }
@@ -228,16 +207,11 @@ function addIcon(
   processAfterLoad();
 }
 
-function setBackground(canvas: Canvas, backgroundType?: String) {
+function setBackground(canvas: Canvas) {
   //potential icon background selection?
   const bgImage = new Image();
 
-  const addonBG = backgroundType === "common" ? addonBrownBG
-              : backgroundType === "uncommon" ? addonBlueBG
-              : backgroundType === "rare" ? addonGreenBG
-              : addonPurpleBG;
-
-  bgImage.src = addonBG;
+  bgImage.src = perkBackground;
 
   bgImage.onload = () => {
     console.log("background loaded successfully");
@@ -250,3 +224,4 @@ function setBackground(canvas: Canvas, backgroundType?: String) {
     canvas.renderAll();
   };
 }
+
