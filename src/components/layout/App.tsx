@@ -56,8 +56,8 @@ export function App() {
               setCanvasURLs={setCanvasURLs}
               jsonEndpoint="https://michaelexile.github.io/DBD-IconsJSON/dbdItems.json"
               getBackgroundImage={(rarity) => ({
-                bg: canvasAssets.item.backgrounds[rarity] || canvasAssets.item.backgrounds.event,
-                grad: canvasAssets.item.gradients[rarity] || canvasAssets.item.gradients.event
+                bg: canvasAssets.item.backgrounds[rarity],
+                grad: canvasAssets.item.gradients[rarity]
               })}
             />
           </TabsContent>
@@ -68,8 +68,8 @@ export function App() {
               setCanvasURLs={setCanvasURLs}
               jsonEndpoint="https://michaelexile.github.io/DBD-IconsJSON/dbdItemAddons.json"
               getBackgroundImage={(rarity) => ({
-                bg: canvasAssets.addon.backgrounds[rarity] || canvasAssets.addon.backgrounds.event,
-                grad: canvasAssets.addon.gradients[rarity] || canvasAssets.addon.gradients.event
+                bg: canvasAssets.addon.backgrounds[rarity],
+                grad: canvasAssets.addon.gradients[rarity]
               })}
             />
           </TabsContent>
@@ -80,8 +80,8 @@ export function App() {
               setCanvasURLs={setCanvasURLs}
               jsonEndpoint="https://michaelexile.github.io/DBD-IconsJSON/dbdOfferings.json"
               getBackgroundImage={(rarity) => ({
-                bg: canvasAssets.offering.backgrounds[rarity] || canvasAssets.offering.backgrounds.event,
-                grad: canvasAssets.offering.gradients[rarity] || canvasAssets.offering.gradients.event
+                bg: canvasAssets.offering.backgrounds[rarity],
+                grad: canvasAssets.offering.gradients[rarity]
               })}
             />
           </TabsContent>

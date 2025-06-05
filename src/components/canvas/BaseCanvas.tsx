@@ -96,7 +96,7 @@ export function BaseCanvas({ files, setCanvasURLs, jsonEndpoint, getBackgroundIm
       
       isProcessing = true;
       
-      const { bg, grad } = getBackgroundImage(rarity || 'common');
+      //const { bg, grad } = getBackgroundImage(rarity || 'common');
       
       const fabricBgImage = new FabricImage(bgImage, {
         left: 0,
