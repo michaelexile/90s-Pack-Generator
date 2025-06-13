@@ -3,31 +3,29 @@ import "../../styles/globals.css";
 import { FileHandler } from "../common/Uploader";
 import { IconDisplay } from "../common/IconDisplay";
 import { useState } from "react";
-import { PerkCanvas } from "../canvas/PerkCanvas";
-import { ItemCanvas } from "../canvas/ItemCanvas";
-import { AddonsCanvas } from "../canvas/AddonsCanvas";
-import { OfferingCanvas } from "../canvas/OfferingCanvas";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import bgImage from "../../assets/img/3D-BG.gif";
-
+import bgImage from "../../assets/img/90s Icon Pack.png";
+import { BaseCanvas } from "../canvas/BaseCanvas";
+import { canvasAssets } from "../canvas/canvasAssets";
+import { PerkCanvas } from "../canvas/PerkCanvas";
 export function App() {
-  // State for managing uploaded files
   const [files, setFiles] = useState<{ name: string; data: string }[]>([]);
-  // State for storing the generated canvas URLs with unique IDs
-  const [canvasURLs, setCanvasURLs] = useState<{ name: string; data: string; id: number }[]>([]);
-  // State to track if files are currently being processed
+  const [canvasURLs, setCanvasURLs] = useState<
+    { name: string; data: string; id: number }[]
+  >([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [activeTab, setActiveTab] = useState("perk");
 
-  // Function to reset all state when switching tabs
-  // This ensures a clean slate for each tab
-  const handleTabChange = () => {
-    setFiles([]); // Clear uploaded files
-    setCanvasURLs([]); // Clear generated canvas URLs
-    setIsProcessing(false); // Reset processing state
+  const handleTabChange = (tab?: string) => {
+    if (tab) setActiveTab(tab);
+    setFiles([]);
+    setCanvasURLs([]);
+    setIsProcessing(false);
   };
 
-  // Function to handle file uploads
-  const handleFileUpload: React.Dispatch<React.SetStateAction<{ name: string; data: string }[]>> = (newFiles) => {
+  const handleFileUpload: React.Dispatch<
+    React.SetStateAction<{ name: string; data: string }[]>
+  > = (newFiles) => {
     setFiles(newFiles);
   };
 
@@ -35,73 +33,164 @@ export function App() {
     <div className="max-w-7xl mx-auto p-8 text-center relative z-10">
       <h1 className="text-5xl font-bold my-4 leading-tight">PERK CREATOR</h1>
       <h2 className="italic text-gray-600">
-        {" "}
-        Work in Progress, Pardon the jank{" "}
+        Work in Progress, Pardon the jank
       </h2>
 
       <div className="flex justify-center items-center gap-8 mb-8">
         <img
           src={bgImage}
           alt="3D image"
-          className="p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#646cffaa] scale-120"
+          className="p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#646cffaa] w-[512px]"
         />
-
-        
-
-        {/*
-        <img
-          src={logo}
-          alt="Bun Logo"
-          className="h-24 p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#646cffaa] scale-120"
-        />
-        <img
-          src={reactLogo}
-          alt="React Logo"
-          className="h-24 p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#61dafbaa] animate-[spin_20s_linear_infinite]"
-        /> */}
       </div>
 
       <div className="flex justify-center">
+        <div className="w-[600px] items-center radio">
+          <label>
+            <input
+              type="radio"
+              name="tab"
+              value="perk"
+              onChange={() => handleTabChange("perk")}
+              defaultChecked
+            />
+            <span className="option">
+              Perks
+              <span className="click"></span>
+            </span>
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="tab"
+              value="item"
+              onChange={() => handleTabChange("item")}
+            />
+            <span className="option">
+              Items
+              <span className="click"></span>
+            </span>
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="tab"
+              value="addon"
+              onChange={() => handleTabChange("addon")}
+            />
+            <span className="option">
+              Addons
+              <span className="click"></span>
+            </span>
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="tab"
+              value="offering"
+              onChange={() => handleTabChange("offering")}
+            />
+            <span className="option">
+              Offerings
+              <span className="click"></span>
+            </span>
+          </label>
 
-      
-      <Tabs defaultValue="perk" className="w-[400px] items-center" onValueChange={handleTabChange}>
-          <TabsList>
-            <TabsTrigger value="perk">Perks</TabsTrigger>
-            <TabsTrigger value="item">Items</TabsTrigger>
-            <TabsTrigger value="addon">Addons</TabsTrigger>
-            <TabsTrigger value="offering">Offerings</TabsTrigger>
+          {activeTab === "perk" && (
+            <PerkCanvas
+              files={isProcessing ? [] : files}
+              setCanvasURLs={setCanvasURLs}
+            />
+          )}
 
-          </TabsList>
-          {/* Perk tab content */}
-          <TabsContent value="perk">
-            {/* Only pass files to PerkCanvas if not currently processing */}
+          {activeTab === "item" && (
+            <BaseCanvas
+              files={isProcessing ? [] : files}
+              setCanvasURLs={setCanvasURLs}
+              jsonEndpoint="https://michaelexile.github.io/DBD-IconsJSON/dbdItems.json"
+              getBackgroundImage={(rarity) => ({
+                bg: canvasAssets.item.backgrounds[rarity],
+                grad: canvasAssets.item.gradients[rarity],
+              })}
+            />
+          )}
+
+          {activeTab === "addon" && (
+            <BaseCanvas
+              files={isProcessing ? [] : files}
+              setCanvasURLs={setCanvasURLs}
+              jsonEndpoint="https://michaelexile.github.io/DBD-IconsJSON/dbdItemAddons.json"
+              getBackgroundImage={(rarity) => ({
+                bg: canvasAssets.addon.backgrounds[rarity],
+                grad: canvasAssets.addon.gradients[rarity],
+              })}
+            />
+          )}
+
+          {activeTab === "offering" && (
+            <BaseCanvas
+              files={isProcessing ? [] : files}
+              setCanvasURLs={setCanvasURLs}
+              jsonEndpoint="https://michaelexile.github.io/DBD-IconsJSON/dbdOfferings.json"
+              getBackgroundImage={(rarity) => ({
+                bg: canvasAssets.offering.backgrounds[rarity],
+                grad: canvasAssets.offering.gradients[rarity],
+              })}
+            />
+          )}
+
+          {/* <TabsContent value="perk">
+
             <PerkCanvas files={isProcessing ? [] : files} setCanvasURLs={setCanvasURLs} />
           </TabsContent>
-          {/* Item tab content */}
+
           <TabsContent value="item">
-            <ItemCanvas files={isProcessing ? [] : files} setCanvasURLs={setCanvasURLs} />
+            <BaseCanvas
+              files={isProcessing ? [] : files}
+              setCanvasURLs={setCanvasURLs}
+              jsonEndpoint="https://michaelexile.github.io/DBD-IconsJSON/dbdItems.json"
+              getBackgroundImage={(rarity) => ({
+                bg: canvasAssets.item.backgrounds[rarity],
+                grad: canvasAssets.item.gradients[rarity]
+              })}
+            />
           </TabsContent>
+
           <TabsContent value="addon">
-            <AddonsCanvas files={isProcessing ? [] : files} setCanvasURLs={setCanvasURLs} />
+            <BaseCanvas
+              files={isProcessing ? [] : files}
+              setCanvasURLs={setCanvasURLs}
+              jsonEndpoint="https://michaelexile.github.io/DBD-IconsJSON/dbdItemAddons.json"
+              getBackgroundImage={(rarity) => ({
+                bg: canvasAssets.addon.backgrounds[rarity],
+                grad: canvasAssets.addon.gradients[rarity]
+              })}
+            />
           </TabsContent>
 
           <TabsContent value="offering">
-            {/* Only pass files to PerkCanvas if not currently processing */}
-            <OfferingCanvas files={isProcessing ? [] : files} setCanvasURLs={setCanvasURLs} />
+            <BaseCanvas
+              files={isProcessing ? [] : files}
+              setCanvasURLs={setCanvasURLs}
+              jsonEndpoint="https://michaelexile.github.io/DBD-IconsJSON/dbdOfferings.json"
+              getBackgroundImage={(rarity) => ({
+                bg: canvasAssets.offering.backgrounds[rarity],
+                grad: canvasAssets.offering.gradients[rarity]
+              })}
+            />
           </TabsContent>
-        </Tabs>
-
+*/}
         </div>
+      </div>
+
       <div className="flex justify-center items-center">
-        {/* FileHandler component for file uploads */}
         <FileHandler
           setFileData={handleFileUpload}
           setIsProcessing={setIsProcessing}
           resetStates={handleTabChange}
         />
-        {/* Tabs component with state reset on change */}
       </div>
-      {/* Display generated icons */}
+
       <div className="w-full">
         <IconDisplay files={canvasURLs} />
       </div>

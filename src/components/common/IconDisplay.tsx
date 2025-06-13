@@ -1,12 +1,10 @@
-import { DownloadZip } from './DownloadZip';
+import { DownloadZip } from '../common/DownloadZip';
 
 interface IconDisplayProps {
   files: { name: string; data: string; id: number }[];
 }
 
-
 export function IconDisplay({ files }: IconDisplayProps) {
-  console.log("IconDisplay received files:", files.map(f => f.name));
   return (
     <div>
       <h2>⬇️ Generated Icons ⬇️</h2>

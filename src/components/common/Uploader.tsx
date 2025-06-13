@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { MainCanvas } from "../canvas/Canvas";
 
 interface FileHandlerProps {
   setFileData: React.Dispatch<React.SetStateAction<{ name: string; data: string }[]>>;
@@ -16,7 +15,8 @@ export function FileHandler({ setFileData, setIsProcessing, resetStates }: FileH
   /*const [isProcessing, setIsProcessing] = useState(false);*/
 
   function uploadFiles(event: any) {
-    console.log("FileHandler: uploadFiles called");
+    resetStates();
+    console.log("entering uploadFiles");
     const fileList = event.target.files;
 
     if (!fileList || fileList.length === 0) {
@@ -24,54 +24,49 @@ export function FileHandler({ setFileData, setIsProcessing, resetStates }: FileH
       return;
     }
 
-    setIsProcessing(true);
-    console.log("FileHandler: Files processing:", fileList.length);
+    setIsProcessing(true); //preventing duplicate uploads due to trigger based on file updates on Canvas component
+    console.log("Files processing:", fileList.length);
     for (let i = 0; i < fileList.length; i++) {
-      console.log("FileHandler: Processing file:", fileList[i].name);
+      console.log("Processing file:", fileList[i].name);
       if (!fileList[i].type.startsWith("image/png")) {
         console.error("Only PNG files are allowed.");
-        continue;
+        continue; //skips to next image to see if it passes the criteria
       } else {
-        console.log("FileHandler: creating fileName");
+        //we need a dataURL for the image for compatibility with ImageTracer
+        console.log("creating fileName");
         const fileName = fileList[i].name.substring(
           0,
           fileList[i].name.lastIndexOf(".")
         );
         const icon = fileList[i];
         const reader = new FileReader();
-
+       
         reader.onload = (e) => {
-          console.log("FileHandler: entering reader.onload for file:", fileName);
+          console.log("entering reader.onload");
           const dataUrl = e.target?.result as string;
           setFileData((prevFiles) => {
-            console.log("FileHandler: Previous files count:", prevFiles.length);
             const updatedFiles = [...prevFiles, { name: fileName, data: dataUrl }];
-            console.log("FileHandler: Updated files count:", updatedFiles.length);
             if (updatedFiles.length === fileList.length) {
               setIsProcessing(false);
-              console.log("FileHandler: processing complete, total files:", updatedFiles.length);
+              console.log("processing complete");
             }
             return updatedFiles;
           });
+          
         };
 
         reader.readAsDataURL(icon);
       }
-      console.log("FileHandler: File processed + added to fileData.");
+      console.log("File processed + added to fileData.");
     }
+    
   }
 
   return (
     <>
       <div className="py-5 ">
         <button
-          onClick={() => {
-            console.log("FileHandler: Upload button clicked");
-            if (fileInputRef.current) {
-              fileInputRef.current.value = ''; // Reset the input value
-              fileInputRef.current.click();
-            }
-          }}
+          onClick={() => fileInputRef.current?.click()}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           Upload Files
@@ -87,10 +82,7 @@ export function FileHandler({ setFileData, setIsProcessing, resetStates }: FileH
           accept="image/png"
           ref={fileInputRef}
           className="hidden"
-          onChange={(e) => {
-            console.log("FileHandler: File input onChange triggered");
-            uploadFiles(e);
-          }}
+          onChange={uploadFiles}
         />
       </div>
 
