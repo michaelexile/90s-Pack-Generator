@@ -30,11 +30,13 @@ export function App() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-8 text-center relative z-10">
-      <h1 className="text-5xl font-bold my-4 leading-tight">PERK CREATOR</h1>
+    <div className="max-w-7xl mx-auto text-center relative z-10">
+ {/*     <h1 className="text-5xl font-bold my-4 leading-tight">PERK CREATOR</h1>
       <h2 className="italic text-gray-600">
         Work in Progress, Pardon the jank
       </h2>
+
+      */}
 
       <div className="flex justify-center items-center gap-8 mb-8">
         <img

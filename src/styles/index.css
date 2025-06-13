@@ -90,7 +90,7 @@ body::before {
 }
 
 .option:hover {
-  color: #ffd700; /* Gold color on hover */
+  color: #696969; /* Gold color on hover */
 }
 
 .option.selected {
